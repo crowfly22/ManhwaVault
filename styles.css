@@ -315,6 +315,7 @@ input { font-family: inherit; }
 }
 .chapter-item:hover { background: var(--bg-card-hover); }
 .chapter-item__num { font-weight: 600; font-size: 0.9rem; }
+.chapter-item__lang { font-size: 0.65rem; background: var(--accent-dim); color: var(--accent); padding: 1px 5px; border-radius: 4px; margin-left: 6px; font-weight: 600; }
 .chapter-item__title { font-size: 0.8rem; color: var(--text-muted); flex: 1; margin-left: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chapter-item__date { font-size: 0.75rem; color: var(--text-dim); flex-shrink: 0; }
 .chapter-item.read { opacity: 0.5; }

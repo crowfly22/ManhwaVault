@@ -93,11 +93,20 @@ const API = {
     },
 
     async getMangaChapters(mangaId, lang = 'en') {
-        return this._fetch(`/manga/${mangaId}/feed`, {
+        // Try requested language first
+        let res = await this._fetch(`/manga/${mangaId}/feed`, {
             'translatedLanguage[]': [lang],
             'order[chapter]': 'asc',
             limit: 500,
         });
+        // Fallback: if no chapters in requested language, try all languages
+        if (!res.data || res.data.length === 0) {
+            res = await this._fetch(`/manga/${mangaId}/feed`, {
+                'order[chapter]': 'asc',
+                limit: 500,
+            });
+        }
+        return res;
     },
 
     async getChapterPages(chapterId) {
@@ -557,10 +566,12 @@ async function renderDetail(container) {
                             const chNum = ch.attributes.chapter || '?';
                             const chTitle = ch.attributes.title || '';
                             const chDate = formatDate(ch.attributes.publishAt);
+                            const chLang = (ch.attributes.translatedLanguage || '').toUpperCase();
                             const isRead = State.history.some(h => h.chapterId === ch.id);
                             return `
                                 <div class="chapter-item ${isRead ? 'read' : ''}" onclick="app.readChapter('${mangaId}', '${ch.id}', ${i})">
                                     <span class="chapter-item__num">Ch. ${esc(chNum)}</span>
+                                    ${chLang && chLang !== 'EN' ? `<span class="chapter-item__lang">${chLang}</span>` : ''}
                                     <span class="chapter-item__title">${esc(chTitle)}</span>
                                     <span class="chapter-item__date">${chDate}</span>
                                 </div>
