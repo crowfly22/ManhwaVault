@@ -20,9 +20,20 @@ const API = {
         const wait = Math.max(0, 200 - (now - this.lastRequest));
         if (wait) await this.delay(wait);
         this.lastRequest = Date.now();
-        const res = await fetch(url.toString());
-        if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
-        return res.json();
+        
+        // Try direct fetch first, fallback to CORS proxy
+        const targetUrl = url.toString();
+        try {
+            const res = await fetch(targetUrl);
+            if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
+            return res.json();
+        } catch(e) {
+            // Fallback: use allorigins CORS proxy
+            const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl);
+            const res = await fetch(proxyUrl);
+            if (!res.ok) throw new Error(`Proxy ${res.status}: ${res.statusText}`);
+            return res.json();
+        }
     },
 
     delay(ms) { return new Promise(r => setTimeout(r, ms)); },
