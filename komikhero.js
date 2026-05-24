@@ -7,7 +7,7 @@
 const PROXY_BASE = 'https://mangadex-proxy.hadesmailbox.workers.dev';
 const API = {
     BASE: 'https://api.mangadex.org',
-    COVER: 'https://uploads.mangadex.org/covers',
+    COVER: 'https://mangadex-proxy.hadesmailbox.workers.dev/covers',
     lastRequest: 0,
 
     async _fetch(path, params = {}) {
@@ -712,8 +712,9 @@ async function openReader(mangaId, chapterId, chapterIndex) {
             return;
         }
 
+        // Route chapter images through CORS proxy
         content.innerHTML = filenames.map((fn, i) => {
-            const url = `${baseUrl}/data/${hash}/${fn}`;
+            const url = `${PROXY_BASE}/data/${hash}/${fn}`;
             return `<img src="${url}" alt="Halaman ${i + 1}" loading="lazy" style="min-height:200px">`;
         }).join('');
 
